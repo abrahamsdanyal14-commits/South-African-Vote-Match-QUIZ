@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SA Vote Match 2026 — Find Your Party</title>
+  <meta name="description" content="5 questions. 18 parties. Find which South African party matches your values for 2026." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f0e8;
+      --accent: #c8ff00;
+      --accent-dark: #9abf00;
+      --border: rgba(245,240,232,0.12);
+      --card-bg: #141414;
+      --muted: rgba(245,240,232,0.5);
+    }
+    html, body {
+      min-height: 100vh;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+    body { display: flex; flex-direction: column; }
+
+    /* HEADER */
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--black); z-index: 10;
+    }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.04em; color: var(--white); }
+    .logo em { color: var(--accent); font-style: normal; }
+    .flag { display: flex; gap: 3px; align-items: center; }
+    .flag span { width: 5px; height: 20px; border-radius: 2px; display: block; }
+
+    /* SCREENS */
+    .screen { display: none; flex-direction: column; flex: 1; }
+    .screen.active { display: flex; }
+
+    /* WELCOME */
+    #welcome {
+      justify-content: center; align-items: center; text-align: center;
+      padding: 3rem 1.5rem;
+      background: radial-gradient(ellipse at 50% 0%, rgba(200,255,0,0.06) 0%, transparent 60%);
+    }
+    .eyebrow { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 14vw, 6rem); line-height: 0.88; letter-spacing: 0.01em; margin-bottom: 1.5rem; }
+    h1 em { color: var(--accent); font-style: normal; }
+    .sub { font-size: 0.95rem; color: var(--muted); max-width: 300px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .cta { background: var(--accent); color: var(--black); border: none; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 1rem 2.8rem; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+    .cta:hover { background: var(--accent-dark); }
+    .cta:active { transform: scale(0.97); }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 1.8rem; }
+    .chip { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,232,0.35); border: 1px solid var(--border); padding: 4px 12px; }
+
+    /* QUIZ */
+    #quiz { padding: 1.5rem; max-width: 600px; width: 100%; margin: 0 auto; }
+    .prog-row { display: flex; align-items: center; gap: 12px; margin-bottom: 2.5rem; }
+    .prog-track { flex: 1; height: 1px; background: var(--border); position: relative; }
+    .prog-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); transition: width 0.4s ease; }
+    .prog-label { font-size: 0.7rem; color: rgba(245,240,232,0.3); letter-spacing: 0.1em; white-space: nowrap; }
+    .q-ghost { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; line-height: 1; color: rgba(245,240,232,0.04); text-align: right; margin-bottom: -1.5rem; user-select: none; }
+    .q-text { font-size: clamp(1rem, 4vw, 1.25rem); font-weight: 400; line-height: 1.45; margin-bottom: 2rem; }
+    .opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 2rem; }
+    .opt {
+      background: var(--card-bg); border: 1px solid var(--border);
+      color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 300; line-height: 1.5;
+      text-align: left; padding: 0.9rem 1.2rem 0.9rem 3rem; cursor: pointer; position: relative;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .opt-ltr { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: rgba(245,240,232,0.2); transition: color 0.15s; }
+    .opt:hover { border-color: rgba(200,255,0,0.35); background: rgba(200,255,0,0.03); }
+    .opt:hover .opt-ltr { color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: rgba(200,255,0,0.05); }
+    .opt.sel .opt-ltr { color: var(--accent); }
+    .nav { display: flex; justify-content: space-between; align-items: center; }
+    .btn-back { background: none; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.7rem 1.4rem; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .btn-back:hover:not(:disabled) { color: var(--white); border-color: rgba(245,240,232,0.3); }
+    .btn-back:disabled { opacity: 0.2; cursor: default; }
+    .btn-next { background: var(--accent); border: none; color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.7rem 1.8rem; cursor: pointer; transition: background 0.15s, opacity 0.15s; }
+    .btn-next:disabled { opacity: 0.2; cursor: default; }
+    .btn-next:not(:disabled):hover { background: var(--accent-dark); }
+
+    /* RESULTS */
+    #results { padding: 1.5rem; max-width: 600px; width: 100%; margin: 0 auto; padding-bottom: 4rem; }
+    .res-head { margin-bottom: 1.5rem; }
+    .res-eyebrow { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; }
+    .res-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 8vw, 3rem); line-height: 1; margin-bottom: 0.4rem; }
+    .res-sub { font-size: 0.8rem; color: var(--muted); }
+    .pcard { background: var(--card-bg); border: 1px solid var(--border); padding: 0.9rem 1.1rem; margin-bottom: 7px; position: relative; overflow: hidden; }
+    .pcard.top { border-color: var(--accent); }
+    .pcard-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; gap: 0.5rem; }
+    .pname { font-size: 0.88rem; font-weight: 500; line-height: 1.2; }
+    .pabbr { font-size: 0.68rem; color: rgba(245,240,232,0.35); letter-spacing: 0.06em; margin-top: 1px; }
+    .ppct { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; line-height: 1; color: var(--accent); flex-shrink: 0; }
+    .bar-bg { height: 1px; background: rgba(245,240,232,0.07); }
+    .bar-fg { height: 1px; transition: width 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .top-tag { position: absolute; top: 0; right: 0; background: var(--accent); color: var(--black); font-size: 0.58rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 9px; }
+    .res-btns { display: flex; gap: 8px; margin-top: 1.5rem; flex-wrap: wrap; }
+    .res-btn { flex: 1; min-width: 130px; padding: 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-align: center; }
+    .res-btn.pri { background: var(--accent); color: var(--black); border: none; }
+    .res-btn.pri:hover { background: var(--accent-dark); }
+    .res-btn.sec { background: none; color: var(--white); border: 1px solid var(--border); }
+    .res-btn.sec:hover { border-color: rgba(245,240,232,0.3); }
+    .disclaimer { font-size: 0.68rem; color: rgba(245,240,232,0.25); line-height: 1.7; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><em>SA</em> VOTE MATCH 2026</div>
+  <div class="flag">
+    <span style="background:#007A4D"></span>
+    <span style="background:#FFB81C"></span>
+    <span style="background:#DE3831"></span>
+    <span style="background:#002395"></span>
+    <span style="background:#f5f0e8"></span>
+  </div>
+</header>
+
+<!-- WELCOME -->
+<section class="screen active" id="welcome">
+  <p class="eyebrow">2026 Local Government Elections</p>
+  <h1>WHO DO<br>YOU <em>VOTE</em><br>FOR?</h1>
+  <p class="sub">5 honest questions. 18 parties. Find out where your values really sit on the South African political map.</p>
+  <button class="cta" onclick="start()">Take the quiz →</button>
+  <div class="chips">
+    <div class="chip">Anonymous</div>
+    <div class="chip">2 minutes</div>
+    <div class="chip">18 parties</div>
+    <div class="chip">Non-partisan</div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="screen" id="quiz">
+  <div class="prog-row">
+    <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+    <div class="prog-label" id="pl">1 / 5</div>
+  </div>
+  <div class="q-ghost" id="qg">01</div>
+  <div class="q-text" id="qt"></div>
+  <div class="opts" id="oa"></div>
+  <div class="nav">
+    <button class="btn-back" id="bb" onclick="back()" disabled>← Back</button>
+    <button class="btn-next" id="bn" onclick="next()" disabled>Next →</button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="screen" id="results">
+  <div class="res-head">
+    <p class="res-eyebrow">Your results</p>
+    <h2 class="res-title">YOUR MATCH</h2>
+    <p class="res-sub">How your values align with SA's 18 parliamentary parties.</p>
+  </div>
+  <div id="rl"></div>
+  <div class="res-btns">
+    <button class="res-btn pri" onclick="share()">Share quiz ↗</button>
+    <button class="res-btn sec" onclick="start()">Retake quiz</button>
+  </div>
+  <p class="disclaimer">Non-partisan. For educational purposes only. Scores are based on publicly available manifestos, parliamentary voting records and policy positions. Not a voting recommendation. Share freely.</p>
+</section>
+
+<script>
+const Q = [
+  {
+    q: "How should South Africa's economy be managed?",
+    opts: [
+      { t: "Free markets — private sector leads, government deregulates and steps back", s: {DA:3,VF:3,PA:2,ActionSA:2,ACDP:1} },
+      { t: "Mixed economy — government guides direction, private sector drives delivery", s: {ANC:2,IFP:2,ActionSA:2,UFC:2,UDM:1} },
+      { t: "State-led — government owns and controls key industries, land and mines", s: {EFF:3,MK:3,PAC:2,ATM:2,ANC:1} },
+      { t: "Community and faith-based — moral and community values must shape all economic decisions", s: {ACDP:3,AlJamah:3,ATM:1,IFP:1} },
+      { t: "Radical redistribution — nationalise banks, mines and land without compensation now", s: {EFF:3,MK:3,PAC:3,UAT:2} }
+    ]
+  },
+  {
+    q: "What is the most urgent priority for government right now?",
+    opts: [
+      { t: "Fighting corruption — prosecute all offenders, clean up the state completely", s: {DA:3,ActionSA:3,VF:2,PA:2,UFC:2} },
+      { t: "Jobs and the economy — cut unemployment, grow GDP, support businesses", s: {ANC:2,IFP:2,UFC:2,UDM:2,ActionSA:1} },
+      { t: "Land and economic freedom — return land to Black South Africans and nationalise key sectors", s: {EFF:3,MK:3,PAC:3,ATM:2,UAT:2} },
+      { t: "Safety and crime — fix policing, protect communities, tackle gang violence", s: {PA:3,ActionSA:2,DA:1,NCC:2} },
+      { t: "Moral and social renewal — restore values, protect families, rebuild community trust", s: {ACDP:3,AlJamah:3,IFP:1,ATM:1} }
+    ]
+  },
+  {
+    q: "What should happen with land reform in South Africa?",
+    opts: [
+      { t: "Protect property rights — willing seller, willing buyer only, no forced expropriation", s: {DA:3,VF:3,ACDP:2,ActionSA:1} },
+      { t: "Gradual reform — speed up redistribution but pay fair compensation to landowners", s: {ANC:2,IFP:2,UFC:2,UDM:2,PA:1} },
+      { t: "Expropriation without compensation — land must be returned to the people immediately", s: {EFF:3,MK:3,PAC:3,ATM:2,UAT:2} },
+      { t: "Urban land focus — secure housing tenure for township and informal settlement residents first", s: {PA:3,ActionSA:2,NCC:2,UFC:1} },
+      { t: "Community land trusts — land held collectively by communities, not private individuals", s: {AlJamah:2,ATM:2,UDM:1,UAT:1} }
+    ]
+  },
+  {
+    q: "How should South Africa address racial inequality?",
+    opts: [
+      { t: "Keep and strengthen BBBEE and Employment Equity — race-based redress remains necessary", s: {ANC:3,MK:3,EFF:2,ATM:2} },
+      { t: "Reform to needs-based policies — help all poor South Africans regardless of race", s: {ActionSA:3,IFP:2,UFC:2,UDM:2} },
+      { t: "Scrap all race-based policies — they divide the country and should be replaced by merit", s: {DA:3,VF:3,ACDP:2,PA:2} },
+      { t: "Full radical transformation — only total nationalisation and redistribution will fix inequality", s: {EFF:3,MK:3,PAC:3,UAT:2} },
+      { t: "Protect minority communities — cultural, language and religious rights must be guaranteed in law", s: {VF:3,IFP:2,ACDP:2,NCC:2,AlJamah:1} }
+    ]
+  },
+  {
+    q: "Which would immediately stop you from voting for a party?",
+    opts: [
+      { t: "Corrupt leaders — fraud charges, state capture links or unexplained wealth", s: {DA:3,ActionSA:3,VF:2,UFC:2,PA:1} },
+      { t: "Undermining the Constitution — threatening courts, property rights or democratic institutions", s: {DA:3,VF:3,IFP:2,ACDP:2,UFC:2} },
+      { t: "Policies that protect the wealthy — ignoring the poor majority and serving elite interests", s: {EFF:3,MK:3,PAC:2,ATM:2,AlJamah:2,UAT:2} },
+      { t: "Hate speech or xenophobia — targeting foreign nationals or minority groups", s: {UFC:3,DA:2,UDM:2,IFP:1} },
+      { t: "Anti-religious or immoral policies — attacking faith values or legalising harmful behaviour", s: {ACDP:3,AlJamah:3,ATM:2,IFP:1} }
+    ]
+  }
+];
+
+const PARTIES = {
+  ANC:      { name:"African National Congress",           abbr:"ANC",        color:"#3B6D11" },
+  DA:       { name:"Democratic Alliance",                 abbr:"DA",         color:"#185FA5" },
+  EFF:      { name:"Economic Freedom Fighters",           abbr:"EFF",        color:"#A32D2D" },
+  MK:       { name:"uMkhonto weSizwe Party",              abbr:"MK",         color:"#854F0B" },
+  IFP:      { name:"Inkatha Freedom Party",               abbr:"IFP",        color:"#0C447C" },
+  PA:       { name:"Patriotic Alliance",                  abbr:"PA",         color:"#5F5E5A" },
+  VF:       { name:"Vryheidsfront Plus",                  abbr:"VF+",        color:"#0F6E56" },
+  ActionSA: { name:"ActionSA",                            abbr:"ActionSA",   color:"#533AB7" },
+  ACDP:     { name:"African Christian Democratic Party",  abbr:"ACDP",       color:"#7B3FA0" },
+  UFC:      { name:"Unite for Change",                    abbr:"UFC",        color:"#C8881A" },
+  UDM:      { name:"United Democratic Movement",          abbr:"UDM",        color:"#1A6B8A" },
+  ATM:      { name:"African Transformation Movement",     abbr:"ATM",        color:"#8A3030" },
+  AlJamah:  { name:"Al Jama-ah",                          abbr:"Al Jama-ah", color:"#1A7A4A" },
+  NCC:      { name:"National Coloured Congress",          abbr:"NCC",        color:"#6B4A1A" },
+  PAC:      { name:"Pan Africanist Congress",             abbr:"PAC",        color:"#4A1A6B" },
+  UAT:      { name:"United Africans Transformation",      abbr:"UAT",        color:"#1A4A6B" },
+  BOSA:     { name:"Build One South Africa",              abbr:"BOSA",       color:"#2A6B3A" },
+  NFP:      { name:"National Freedom Party",              abbr:"NFP",        color:"#6B2A1A" }
+};
+
+let cur = 0, ans = Array(Q.length).fill(null);
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function start() {
+  cur = 0; ans = Array(Q.length).fill(null);
+  render(); show('quiz');
+}
+
+function render() {
+  const q = Q[cur];
+  document.getElementById('pf').style.width = (cur/Q.length*100)+'%';
+  document.getElementById('pl').textContent = (cur+1)+' / '+Q.length;
+  document.getElementById('qg').textContent = String(cur+1).padStart(2,'0');
+  document.getElementById('qt').textContent = q.q;
+  const ltrs = ['A','B','C','D','E'];
+  document.getElementById('oa').innerHTML = q.opts.map((o,i)=>`
+    <button class="opt${ans[cur]===i?' sel':''}" onclick="pick(${i})">
+      <span class="opt-ltr">${ltrs[i]}</span>${o.t}
+    </button>`).join('');
+  document.getElementById('bb').disabled = cur===0;
+  document.getElementById('bn').disabled = ans[cur]===null;
+  document.getElementById('bn').textContent = cur===Q.length-1 ? 'See results →' : 'Next →';
+}
+
+function pick(i) { ans[cur]=i; render(); }
+function back() { if(cur>0){cur--;render();} }
+function next() {
+  if(ans[cur]===null) return;
+  if(cur<Q.length-1){cur++;render();}
+  else results();
+}
+
+function results() {
+  const sc={};
+  Object.keys(PARTIES).forEach(p=>sc[p]=0);
+  ans.forEach((a,qi)=>{
+    if(a!==null) Object.entries(Q[qi].opts[a].s||{}).forEach(([p,v])=>{ if(sc[p]!==undefined) sc[p]+=v; });
+  });
+  const sorted = Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  const max = sorted[0][1]||1;
+  document.getElementById('rl').innerHTML = sorted.map(([p,s],i)=>{
+    const pct = Math.round(s/max*100);
+    const top = i===0;
+    return `<div class="pcard${top?' top':''}">
+      ${top?'<div class="top-tag">Closest match</div>':''}
+      <div class="pcard-row">
+        <div><div class="pname">${PARTIES[p].name}</div><div class="pabbr">${PARTIES[p].abbr}</div></div>
+        <div class="ppct">${pct}%</div>
+      </div>
+      <div class="bar-bg"><div class="bar-fg" style="width:0%;background:${PARTIES[p].color}" data-w="${pct}"></div></div>
+    </div>`;
+  }).join('');
+  show('results');
+  setTimeout(()=>document.querySelectorAll('.bar-fg').forEach(el=>el.style.width=el.dataset.w+'%'),80);
+}
+
+function share() {
+  const url = window.location.href;
+  const txt = '🇿🇦 Find which SA party matches YOUR values — 5 questions, 18 parties!';
+  if(navigator.share) navigator.share({title:'SA Vote Match',text:txt,url});
+  else if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>alert('Link copied! Share on WhatsApp.'));
+  else prompt('Copy this link:',url);
+}
+</script>
+</body>
+</html>
